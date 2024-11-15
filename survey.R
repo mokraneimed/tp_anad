@@ -67,10 +67,12 @@ data_disjoint <- data %>%
 
 head(data_disjoint)
 
-#data_mca <- data %>%
-#  mutate(JobSatisfaction = factor(JobSatisfaction, levels = 1:5))
+data_mca <- data %>%
+ mutate(JobSatisfaction = factor(JobSatisfaction, levels = 1:5))
 
 # Run MCA on the corrected data
+library(FactoMineR)
+
 afcm <- MCA(data_mca)
 
 eig_values <- afcm$eig
