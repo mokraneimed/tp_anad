@@ -1,10 +1,11 @@
 
 #
 library(dplyr)
-getwd()
+print(getwd())
 data <- read.csv("anad/new_data.csv")
+data <- data %>% filter(Gender != "Other")
 
-#data <- data %>%
+# data <- data %>%
 #  mutate(AgeClass = case_when(
 #    Age < 25 ~ "<25",
 #    Age >= 25 & Age <= 34 ~ "25-34",
@@ -67,13 +68,18 @@ data_disjoint <- data %>%
 
 head(data_disjoint)
 
+# data_mca <- data %>%
+#  select(-EmpID)
+
 data_mca <- data %>%
  mutate(JobSatisfaction = factor(JobSatisfaction, levels = 1:5))
 
 # Run MCA on the corrected data
 library(FactoMineR)
 
-afcm <- MCA(data_mca)
+head(data_mca)
+
+afcm <- MCA(data_mca, ncp=12)
 
 eig_values <- afcm$eig
 eig_table <- data.frame(
@@ -93,3 +99,21 @@ fviz_mca_biplot(afcm,
                 title = "Biplot Individus-Variables")
 
 
+# Contributions des variables pour le premier axe
+fviz_contrib(afcm, choice = "var", axes = 1, top = 10)
+
+# Contributions des variables pour le deuxième axe
+fviz_contrib(afcm, choice = "var", axes = 2, top = 10)
+fviz_contrib(afcm, choice = "var", axes = 3, top = 10)
+fviz_contrib(afcm, choice = "var", axes = 4, top = 10)
+fviz_contrib(afcm, choice = "var", axes = 5, top = 10)
+fviz_contrib(afcm, choice = "var", axes = 6, top = 10)
+
+# Extracting the coordinates for the variables on each axis
+coord_table <- as.data.frame(afcm$var$coord)
+
+# Optionally, rename the columns to identify the axes
+colnames(coord_table) <- paste0("Axis ", 1:ncol(coord_table))
+
+# Print the table of projections (coordinates)
+print(coord_table)
